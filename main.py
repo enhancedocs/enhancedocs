@@ -4,6 +4,7 @@ import pickle
 import json
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from langchain import OpenAI
 from langchain.docstore.document import Document
 from langchain.text_splitter import CharacterTextSplitter
@@ -18,6 +19,16 @@ load_dotenv()
 app = FastAPI()
 
 llm = OpenAI(temperature=0.7, model_name="gpt-3.5-turbo")
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.put("/ingest")
