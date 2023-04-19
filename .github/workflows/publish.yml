@@ -21,7 +21,7 @@ jobs:
       - name: Extract metadata (tags, labels) for Docker
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.GITHUB_REPOSITORY }}
+          images: ${{ vars.GITHUB_REPOSITORY }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
