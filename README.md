@@ -11,7 +11,10 @@ Welcome to EnhanceDocs! EnhanceDocs is the open-source AI-powered search engine 
 #### Download EnhanceDocs
 
 - Cloning this repository `git clone git@github.com:enhancedocs/enhancedocs.git`
-- Using docker image `docker pull enhancedocs`
+
+or
+
+- Using docker image `docker pull enhancedocs/enhancedocs`
 
 #### Set up env variables
 
