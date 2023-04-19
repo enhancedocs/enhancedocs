@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  enhancedocs:
+    restart: always
+    build:
+      context: .
+    volumes:
+      - ./data:/usr/src/app/data
+      - ./config.json:/usr/src/app/config.json
+    environment:
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ENHANCEDOCS_ACCESS_TOKEN: ${ENHANCEDOCS_ACCESS_TOKEN}
+      ENHANCEDOCS_API_KEY: ${ENHANCEDOCS_API_KEY}
+    ports:
+      - '8080:8080'
