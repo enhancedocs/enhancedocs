@@ -31,9 +31,9 @@ and we recommend its usage together with cors so only your site can make request
 cp .example.env .env
 ```
 
-#### Update config.json
+#### Update prompt_template.txt
 
-Update `config.json` so matches your project description
+Update `prompt_template.txt` so matches your project description
 
 
 ### 🚀 Launch EnhanceDocs

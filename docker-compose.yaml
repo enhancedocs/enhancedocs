@@ -1,12 +1,13 @@
 version: "3.9"
 services:
   enhancedocs:
+    container_name: enhancedocs
     restart: always
     build:
       context: .
     volumes:
-      - ./data:/usr/src/app/data
-      - ./config.json:/usr/src/app/config.json
+      - ./.enhancedocs/data:/data/enhancedocs
+      - ./.enhancedocs/config:/etc/enhancedocs
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       ENHANCEDOCS_ACCESS_TOKEN: ${ENHANCEDOCS_ACCESS_TOKEN}

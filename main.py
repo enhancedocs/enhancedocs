@@ -3,7 +3,7 @@ import faiss
 import pickle
 import json
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from langchain import OpenAI
 from langchain.docstore.document import Document
@@ -12,8 +12,12 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores.faiss import FAISS
 from langchain.chains import RetrievalQAWithSourcesChain
 from langchain import PromptTemplate
-
+from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 import utils
+from config import Config
+
+
+config = Config()
 
 load_dotenv()
 app = FastAPI()
@@ -43,29 +47,34 @@ async def ingest_endpoint(request: Request, credentials: str = Depends(utils.ver
         for chunk in splitter.split_text(line["content"]):
             source_chunks.append(Document(page_content=chunk, metadata={"source": line["source"]}))
     store = FAISS.from_documents(source_chunks, OpenAIEmbeddings())
-    faiss.write_index(store.index, "data/vectorstore.index")
+    faiss.write_index(store.index, config.vector_index_file_path)
     store.index = None
-    os.makedirs("data", exist_ok=True)
-    with open("data/vectorstore.pkl", "wb") as f:
+    with open(config.vector_store_file_path, "wb") as f:
         pickle.dump(store, f)
     return {"message": "Data ingested successfully"}
 
 
 @app.get("/ask")
 def ask_endpoint(question: str, credentials: str = Depends(utils.verify_access_token)):
-    with open('config.json', 'r') as config_file:
-        config = json.load(config_file)
-    index = faiss.read_index("data/vectorstore.index")
-    with open("data/vectorstore.pkl", "rb") as f:
+    if not os.path.exists(config.vector_index_file_path) or not os.path.exists(config.vector_store_file_path):
+        raise HTTPException(status_code=404, detail="No data found. Ingest data using "
+                                                    "https://github.com/enhancedocs/cli or the API directly")
+    index = faiss.read_index(config.vector_index_file_path)
+    with open(config.vector_store_file_path, "rb") as f:
         store = pickle.load(f)
     store.index = index
     prompt = PromptTemplate(
-        template=config["prompt_template"], input_variables=["summaries", "question"]
+        template=config.prompt_template, input_variables=["summaries", "question"]
     )
-    chain = RetrievalQAWithSourcesChain.from_chain_type(
-        llm=llm,
+    qa_chain = load_qa_with_sources_chain(llm, chain_type="stuff", prompt=prompt)
+    chain = RetrievalQAWithSourcesChain(
+        combine_documents_chain=qa_chain,
         retriever=store.as_retriever(),
-        chain_type_kwargs={"prompt": prompt}
+        return_source_documents=True
     )
     result = chain({"question": question}, return_only_outputs=True)
-    return result
+    sources = []
+    for document in result['source_documents']:
+        if utils.docusaurus_source_filter(document):
+            sources.append(utils.format_docusaurus_source(document.metadata["source"], config.docs_base_url))
+    return {"answer": result["answer"], "sources": sources}
