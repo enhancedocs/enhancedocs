@@ -52,11 +52,9 @@ async def ingest_endpoint(request: Request, credentials: str = Depends(utils.ver
         line = json.loads(line)
         for chunk in splitter.split_text(line["content"]):
             source_chunks.append(Document(page_content=chunk, metadata={"source": line["source"]}))
-    try:
+    if config.chroma_collection_name in chroma_client.list_collections():
         chroma_client.delete_collection(config.chroma_collection_name)
         chroma_client.persist()
-    except IndexError:
-        pass
     Chroma.from_documents(
         documents=source_chunks,
         embedding=embedding,
