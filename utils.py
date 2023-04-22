@@ -1,9 +1,12 @@
 import os
+from typing import Optional
 import faiss
 import pickle
-from typing import Optional
+import qdrant_client
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from langchain.vectorstores import Qdrant
+import main
 
 security = HTTPBearer()
 
@@ -30,6 +33,12 @@ def verify_access_token(credentials: Optional[HTTPAuthorizationCredentials] = De
 
 
 def get_vector_store(config):
+    if config.is_external_db_used():
+        return Qdrant(
+            client=qdrant_client.QdrantClient(**config.qdrant_args),
+            embedding_function=main.embedding.embed_query,
+            collection_name=config.default_collection_name
+        )
     index = faiss.read_index(config.vector_index_file_path)
     with open(config.vector_store_file_path, "rb") as f:
         store = pickle.load(f)
@@ -38,6 +47,8 @@ def get_vector_store(config):
 
 
 def is_db_empty(config):
+    if config.is_external_db_used():
+        return len(config.db_client.get_collections().collections) == 0
     return not os.path.exists(config.vector_index_file_path) or not os.path.exists(config.vector_store_file_path)
 
 

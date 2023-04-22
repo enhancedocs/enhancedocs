@@ -1,10 +1,11 @@
+import json
 import faiss
 import pickle
-import json
+
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from langchain import OpenAI
+from langchain.chat_models import ChatOpenAI
 from langchain.docstore.document import Document
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -14,14 +15,15 @@ from langchain import PromptTemplate
 from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 import utils
 from config import Config
-
+from langchain.vectorstores import Qdrant
 
 load_dotenv()
 config = Config()
 
 app = FastAPI()
 
-llm = OpenAI(temperature=0.7, model_name="gpt-3.5-turbo")
+embedding = OpenAIEmbeddings()
+llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo")
 
 origins = ["*"]
 
@@ -45,11 +47,20 @@ async def ingest_endpoint(request: Request, credentials: str = Depends(utils.ver
         line = json.loads(line)
         for chunk in splitter.split_text(line["content"]):
             source_chunks.append(Document(page_content=chunk, metadata={"source": line["source"]}))
-    store = FAISS.from_documents(source_chunks, OpenAIEmbeddings())
-    faiss.write_index(store.index, config.vector_index_file_path)
-    store.index = None
-    with open(config.vector_store_file_path, "wb") as f:
-        pickle.dump(store, f)
+    if config.is_external_db_used():
+        config.db_client.delete_collection(collection_name=config.default_collection_name)
+        Qdrant.from_documents(
+            documents=source_chunks,
+            embedding=embedding,
+            collection_name=config.default_collection_name,
+            **config.qdrant_args
+        )
+    else:
+        store = FAISS.from_documents(source_chunks, OpenAIEmbeddings())
+        faiss.write_index(store.index, config.vector_index_file_path)
+        store.index = None
+        with open(config.vector_store_file_path, "wb") as f:
+            pickle.dump(store, f)
     return {"message": "Data ingested successfully"}
 
 
