@@ -9,7 +9,6 @@
 <p align=center>
     <a href="https://www.mongodb.com/licensing/server-side-public-license"><img src="https://img.shields.io/badge/license-SSPL--v1-yellow" alt="License: SSPL v1"></a>
     <a href="https://twitter.com/enhancedocs"><img src="https://img.shields.io/twitter/url/https/twitter.com/enhancedocs.svg?style=social&label=Follow%20%40EnhanceDocs" alt="Twitter"></a>
-    <a href="https://github.com/qdrant/qdrant/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-success" alt="Apache 2.0 License"></a>
     <a href="https://discord.gg/AUDa3KZavw"><img src="https://dcbadge.vercel.app/api/server/AUDa3KZavw?compact=true&style=flat" alt="Discord"></a>
 </p>
 
