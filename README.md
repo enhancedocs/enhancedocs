@@ -1,10 +1,17 @@
-# EnhanceDocs
+<p align="center">
+  <img height="100" src="https://raw.githubusercontent.com/enhancedocs/enhancedocs/main/assets/logo.svg" alt="EnhanceDocs">
+</p>
 
-Welcome to EnhanceDocs! EnhanceDocs is the open-source AI-powered search engine for your project or business documentation.
+<p align="center">
+    <b>AI-powered search engine for your project documentation</b>
+</p>
 
-[![License: SSPL v1](https://img.shields.io/badge/license-SSPL--v1-yellow)](https://www.mongodb.com/licensing/server-side-public-license)
-[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/enhancedocs.svg?style=social&label=Follow%20%40EnhanceDocs)](https://twitter.com/enhancedocs)
-[![](https://dcbadge.vercel.app/api/server/AUDa3KZavw?compact=true&style=flat)](https://discord.gg/AUDa3KZavw)
+<p align=center>
+    <a href="https://www.mongodb.com/licensing/server-side-public-license"><img src="https://img.shields.io/badge/license-SSPL--v1-yellow" alt="License: SSPL v1"></a>
+    <a href="https://twitter.com/enhancedocs"><img src="https://img.shields.io/twitter/url/https/twitter.com/enhancedocs.svg?style=social&label=Follow%20%40EnhanceDocs" alt="Twitter"></a>
+    <a href="https://github.com/qdrant/qdrant/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-success" alt="Apache 2.0 License"></a>
+    <a href="https://discord.gg/AUDa3KZavw"><img src="https://dcbadge.vercel.app/api/server/AUDa3KZavw?compact=true&style=flat" alt="Discord"></a>
+</p>
 
 ## Getting Started
 
