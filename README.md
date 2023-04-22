@@ -8,47 +8,26 @@ Welcome to EnhanceDocs! EnhanceDocs is the open-source AI-powered search engine 
 
 ## Getting Started
 
-#### Download EnhanceDocs
+### Install
 
-- Cloning this repository `git clone git@github.com:enhancedocs/enhancedocs.git`
+The easiest way to use EnhanceDocs is to run a pre-built image. To do this, make sure Docker is installed on your system.
 
-or
+```bash
+docker run -p 8080:8080 \
+  -v $(pwd)/.enhancedocs/data:/data/enhancedocs \
+  -v $(pwd)/.enhancedocs/config:/etc/enhancedocs \
+  --env OPENAI_API_KEY=sk-... \
+  enhancedocs/enhancedocs
+```
 
-- Using docker image `docker pull enhancedocs/enhancedocs`
+In this case EnhanceDocs will use default configuration and store all data under ./.enhancedocs directory.
 
-#### Set up env variables
+You can optionally provide the following env variables:
 
-Use the `.example.env` as a template and fill with the required fields.
-
-- `OPENAI_API_KEY` is required; EnhanceDocs relies on [OpenAI API](https://platform.openai.com/docs/introduction)
 - `ENHANCEDOCS_API_KEY` is optional; By default you can ingest data into EnhanceDocs without an API Key, 
-so you can work conformable in your local environment, 
-but we highlight recommend to set this on production if you are exposing the API to the internet.
-- `ENHANCEDOCS_ACCESS_TOKEN` is optional; This is a client side token, 
-and we recommend its usage together with cors so only your site can make requests to the API.
-
-```bash
-cp .example.env .env
-```
-
-### Generate the config files
-
-Spinning up EnhanceDocs will generate the default config files.
-
-```bash
-docker compose up
-```
-
-#### Update the config
-
-Update `.enhancedocs/config/config.json` so matches your project description.
-
-
-### 🚀 Re-Launch EnhanceDocs
-
-```bash
-docker compose up
-```
+so you can work comfortable in your local environment, but we highlight recommend to set this on production.
+- `ENHANCEDOCS_ACCESS_TOKEN` is optional; This is a client side token, and we recommend its usage on production 
+together with cors so only your site can make requests to the API.
 
 ## Managed EnhanceDocs
 
