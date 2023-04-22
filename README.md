@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="100" src="https://raw.githubusercontent.com/enhancedocs/enhancedocs/main/assets/logo.svg" alt="EnhanceDocs">
+  <img height="100" src="https://raw.githubusercontent.com/enhancedocs/enhancedocs/main/assets/logo.png" alt="EnhanceDocs">
 </p>
 
 <p align="center">
