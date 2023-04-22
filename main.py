@@ -17,9 +17,9 @@ import utils
 from config import Config
 
 
+load_dotenv()
 config = Config()
 
-load_dotenv()
 app = FastAPI()
 
 llm = OpenAI(temperature=0.7, model_name="gpt-3.5-turbo")
@@ -59,10 +59,7 @@ def ask_endpoint(question: str, credentials: str = Depends(utils.verify_access_t
     if not os.path.exists(config.vector_index_file_path) or not os.path.exists(config.vector_store_file_path):
         raise HTTPException(status_code=404, detail="No data found. Ingest data using "
                                                     "https://github.com/enhancedocs/cli or the API directly")
-    index = faiss.read_index(config.vector_index_file_path)
-    with open(config.vector_store_file_path, "rb") as f:
-        store = pickle.load(f)
-    store.index = index
+    store = utils.get_vector_store(config)
     prompt = PromptTemplate(
         template=config.prompt_template, input_variables=["summaries", "question", "project_name"]
     )
