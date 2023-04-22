@@ -7,8 +7,8 @@ from integrations import discord_integration
 
 class Config:
     def __init__(self):
-        config_path = ".enhancedocs/config"
-        data_path = ".enhancedocs/data"
+        config_path = "/etc/enhancedocs"
+        data_path = "/data/enhancedocs"
         config_file_name = "config.json"
         config_file_path = config_path + "/" + config_file_name
         os.makedirs(config_path, exist_ok=True)
