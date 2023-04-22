@@ -1,10 +1,18 @@
 import os
 import discord
+from discord import errors
 import main
 import utils
 from langchain import PromptTemplate
 from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 from langchain.chains import RetrievalQAWithSourcesChain
+from langchain.chains.chat_vector_db.prompts import (CONDENSE_QUESTION_PROMPT)
+from langchain.chains.llm import LLMChain
+from langchain.chains import ConversationalRetrievalChain
+
+
+def get_chat_history(chat_history) -> str:
+    return "\n".join(chat_history)
 
 
 class DiscordClient(discord.Client):
@@ -17,20 +25,44 @@ class DiscordClient(discord.Client):
 
         mention = f'<@{self.user.id}>'
         if message.content.startswith(mention):
-            if isinstance(message.channel, discord.Thread):
-                async for msg in message.channel.history(oldest_first=True):
-                    print(f"{msg.author}: {msg.content}")
+            if utils.is_db_empty(main.config):
+                await message.reply("No data found. Contact your Discord administrator. "
+                                    "If you are the administrator; ingest data using "
+                                    "https://github.com/enhancedocs/cli or the API directly", mention_author=True)
                 return
+            store = utils.get_vector_store(main.config)
+            prompt = PromptTemplate(
+                template=main.config.prompt_template, input_variables=["summaries", "question", "project_name"]
+            )
             question = message.content.split(f'{mention} ', 1)[1]
+            if isinstance(message.channel, discord.Thread):
+                chat_history = []
+                async for msg in message.channel.history(oldest_first=True):
+                    if msg.author.id == self.user.id:
+                        chat_history.append(f"AI:{msg.content}")
+                    else:
+                        chat_history.append(f"Human:{msg.content}")
+                async with message.channel.typing():
+                    question_generator = LLMChain(llm=main.llm, prompt=CONDENSE_QUESTION_PROMPT)
+                    doc_chain = load_qa_with_sources_chain(main.llm, chain_type="stuff", prompt=prompt)
+                    chain = ConversationalRetrievalChain(
+                        combine_docs_chain=doc_chain,
+                        retriever=store.as_retriever(),
+                        question_generator=question_generator,
+                        get_chat_history=get_chat_history,
+                        return_source_documents=True
+                    )
+                    result = chain(
+                        {"question": question, "project_name": main.config.project_name, "chat_history": chat_history},
+                        return_only_outputs=True
+                    )
+                    await message.reply(content=result["answer"], mention_author=True)
+                    return
             thread = await message.create_thread(name=question)
             async with thread.typing():
-                store = utils.get_vector_store(main.config)
-                prompt = PromptTemplate(
-                    template=main.config.prompt_template, input_variables=["summaries", "question", "project_name"]
-                )
-                qa_chain = load_qa_with_sources_chain(main.llm, chain_type="stuff", prompt=prompt)
+                doc_chain = load_qa_with_sources_chain(main.llm, chain_type="stuff", prompt=prompt)
                 chain = RetrievalQAWithSourcesChain(
-                    combine_documents_chain=qa_chain,
+                    combine_documents_chain=doc_chain,
                     retriever=store.as_retriever(),
                     return_source_documents=True
                 )
@@ -46,7 +78,17 @@ async def start():
     intents.message_content = True
 
     client = DiscordClient(intents=intents)
+
+    discord_token = os.environ.get("DISCORD_TOKEN")
+    if discord_token is None:
+        print("Discord Integration is enabled but no DISCORD_TOKEN has been provided, shutting down "
+              "integration")
+        return
+
     try:
-        await client.start(os.environ.get("DISCORD_TOKEN"))
+        await client.start(discord_token)
     except KeyboardInterrupt:
         await client.close()
+    except discord.errors.LoginFailure:
+        print("Discord Integration is enabled but invalid DISCORD_TOKEN was provided, shutting down "
+              "integration...")

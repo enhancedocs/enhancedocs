@@ -56,7 +56,7 @@ async def ingest_endpoint(request: Request, credentials: str = Depends(utils.ver
 
 @app.get("/ask")
 def ask_endpoint(question: str, credentials: str = Depends(utils.verify_access_token)):
-    if not os.path.exists(config.vector_index_file_path) or not os.path.exists(config.vector_store_file_path):
+    if utils.is_db_empty(config):
         raise HTTPException(status_code=404, detail="No data found. Ingest data using "
                                                     "https://github.com/enhancedocs/cli or the API directly")
     store = utils.get_vector_store(config)
