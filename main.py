@@ -64,7 +64,7 @@ def ask_endpoint(question: str, credentials: str = Depends(utils.verify_access_t
         store = pickle.load(f)
     store.index = index
     prompt = PromptTemplate(
-        template=config.prompt_template, input_variables=["summaries", "question"]
+        template=config.prompt_template, input_variables=["summaries", "question", "project_name"]
     )
     qa_chain = load_qa_with_sources_chain(llm, chain_type="stuff", prompt=prompt)
     chain = RetrievalQAWithSourcesChain(
@@ -72,7 +72,7 @@ def ask_endpoint(question: str, credentials: str = Depends(utils.verify_access_t
         retriever=store.as_retriever(),
         return_source_documents=True
     )
-    result = chain({"question": question}, return_only_outputs=True)
+    result = chain({"question": question, "project_name": config.project_name}, return_only_outputs=True)
     sources = []
     for document in result['source_documents']:
         if utils.docusaurus_source_filter(document):

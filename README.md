@@ -31,12 +31,20 @@ and we recommend its usage together with cors so only your site can make request
 cp .example.env .env
 ```
 
-#### Update prompt_template.txt
+### Generate the config files
 
-Update `prompt_template.txt` so matches your project description
+Spinning up EnhanceDocs will generate the default config files.
+
+```bash
+docker compose up
+```
+
+#### Update the config
+
+Update `.enhancedocs/config/config.json` so matches your project description.
 
 
-### 🚀 Launch EnhanceDocs
+### 🚀 Re-Launch EnhanceDocs
 
 ```bash
 docker compose up
