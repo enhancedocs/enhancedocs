@@ -47,4 +47,4 @@ https://enhancedocs.com
 ## LICENSE
 
 EnhanceDocs is free and the source is available.
-EnhanceDocs is published under the [Server Side Public License (SSPL) v1](LICENSE)
+EnhanceDocs is published under the [GNU Affero General Public License v3.0](LICENSE)
