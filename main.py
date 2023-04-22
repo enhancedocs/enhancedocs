@@ -1,4 +1,3 @@
-import os
 import faiss
 import pickle
 import json

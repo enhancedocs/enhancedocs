@@ -1,6 +1,5 @@
 import os
 import discord
-from discord import errors
 import main
 import utils
 from langchain import PromptTemplate
