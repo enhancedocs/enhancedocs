@@ -1,4 +1,6 @@
 import os
+import faiss
+import pickle
 from typing import Optional
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -25,6 +27,14 @@ def verify_access_token(credentials: Optional[HTTPAuthorizationCredentials] = De
     if access_token != token and api_key != token:
         raise HTTPException(status_code=401, detail="Invalid Access Token")
     return token
+
+
+def get_vector_store(config):
+    index = faiss.read_index(config.vector_index_file_path)
+    with open(config.vector_store_file_path, "rb") as f:
+        store = pickle.load(f)
+    store.index = index
+    return store
 
 
 def format_docusaurus_source(source, base_url=None):
