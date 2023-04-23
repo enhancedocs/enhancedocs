@@ -2,6 +2,7 @@
   "project_name": "EnhanceDocs",
   "docs_base_url": "https://docs.enhancedocs.com/",
   "integrations": {
-    "discord": false
+    "discord": false,
+    "slack": true
   }
 }

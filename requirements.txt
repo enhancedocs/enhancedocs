@@ -1,4 +1,3 @@
-
 python-dotenv==1.0.0
 uvicorn==0.21.1
 fastapi==0.95.1
@@ -8,3 +7,4 @@ langchain==0.0.144
 faiss-cpu==1.7.3
 discord.py==2.2.2
 qdrant-client==1.1.5
+slack-bolt==1.17.2

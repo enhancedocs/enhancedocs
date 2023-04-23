@@ -13,6 +13,7 @@ from langchain.vectorstores.faiss import FAISS
 from langchain.chains import RetrievalQAWithSourcesChain
 from langchain import PromptTemplate
 from langchain.chains.qa_with_sources import load_qa_with_sources_chain
+
 import utils
 from config import Config
 from langchain.vectorstores import Qdrant
@@ -85,3 +86,10 @@ def ask_endpoint(question: str, credentials: str = Depends(utils.verify_access_t
         if utils.docusaurus_source_filter(document):
             sources.append(utils.format_docusaurus_source(document.metadata["source"], config.docs_base_url))
     return {"answer": result["answer"], "sources": sources}
+
+
+@app.post("/integrations/slack/events")
+async def handle_slack_event(request: Request):
+    if config.slack_client is None:
+        raise HTTPException(status_code=404, detail="Slack Integration not enabled")
+    return await config.slack_client.handler.handle(request)
