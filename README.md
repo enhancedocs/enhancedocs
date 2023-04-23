@@ -44,6 +44,10 @@ Notion, Slack, Teams, Confluence, Discord and much more...
 
 https://enhancedocs.com
 
+## Learn more
+
+The best place to get started is following our getting started guide on the [EnhanceDocs Documentation](https://docs.enhancedocs.com/).
+
 ## LICENSE
 
 EnhanceDocs is free and the source is available.
