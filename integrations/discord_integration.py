@@ -10,13 +10,9 @@ from langchain.chains.llm import LLMChain
 from langchain.chains import ConversationalRetrievalChain
 
 
-def get_chat_history(chat_history) -> str:
-    return "\n".join(chat_history)
-
-
 class DiscordClient(discord.Client):
     async def on_ready(self):
-        print(f'Logged in as {self.user} (ID: {self.user.id})')
+        print(f'[Discord]: Logged in as {self.user} (ID: {self.user.id})')
 
     async def on_message(self, message):
         if message.author.id == self.user.id:
@@ -30,9 +26,7 @@ class DiscordClient(discord.Client):
                                     "https://github.com/enhancedocs/cli or the API directly", mention_author=True)
                 return
             store = utils.get_vector_store(main.config)
-            prompt = PromptTemplate(
-                template=main.config.prompt_template, input_variables=["summaries", "question", "project_name"]
-            )
+            prompt = main.config.prompt
             question = message.content.split(f'{mention} ', 1)[1]
             if isinstance(message.channel, discord.Thread):
                 chat_history = []
@@ -48,14 +42,14 @@ class DiscordClient(discord.Client):
                         combine_docs_chain=doc_chain,
                         retriever=store.as_retriever(),
                         question_generator=question_generator,
-                        get_chat_history=get_chat_history,
+                        get_chat_history=utils.get_chat_history,
                         return_source_documents=True
                     )
                     result = chain(
                         {"question": question, "project_name": main.config.project_name, "chat_history": chat_history},
                         return_only_outputs=True
                     )
-                    await message.reply(content=result["answer"], mention_author=True)
+                    await message.reply(content=result.get("answer"), mention_author=True)
                     return
             thread = await message.create_thread(name=question)
             async with thread.typing():
@@ -69,7 +63,7 @@ class DiscordClient(discord.Client):
                     {"question": question, "project_name": main.config.project_name},
                     return_only_outputs=True
                 )
-                await thread.send(content=result["answer"], mention_author=True)
+                await thread.send(content=result.get("answer"), mention_author=True)
 
 
 async def start():

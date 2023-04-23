@@ -52,6 +52,10 @@ def is_db_empty(config):
     return not os.path.exists(config.vector_index_file_path) or not os.path.exists(config.vector_store_file_path)
 
 
+def get_chat_history(chat_history) -> str:
+    return "\n".join(chat_history)
+
+
 def format_docusaurus_source(source, base_url=None):
     if source.startswith("http"):
         return source
