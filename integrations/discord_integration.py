@@ -2,7 +2,6 @@ import os
 import discord
 import main
 import utils
-from langchain import PromptTemplate
 from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 from langchain.chains import RetrievalQAWithSourcesChain
 from langchain.chains.chat_vector_db.prompts import (CONDENSE_QUESTION_PROMPT)

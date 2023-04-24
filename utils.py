@@ -48,7 +48,8 @@ def get_vector_store(config):
 
 def is_db_empty(config):
     if config.is_external_db_used():
-        return len(config.db_client.get_collections().collections) == 0
+        collections = main.config.db_client.get_collections().collections
+        return not any(collection.name == config.default_collection_name for collection in collections)
     return not os.path.exists(config.vector_index_file_path) or not os.path.exists(config.vector_store_file_path)
 
 

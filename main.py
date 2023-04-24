@@ -11,17 +11,16 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores.faiss import FAISS
 from langchain.chains import RetrievalQAWithSourcesChain
-from langchain import PromptTemplate
 from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 
 import utils
 from config import Config
 from langchain.vectorstores import Qdrant
-
 load_dotenv()
 config = Config()
 
 app = FastAPI()
+
 
 embedding = OpenAIEmbeddings()
 llm = ChatOpenAI(temperature=0.7, model_name="gpt-3.5-turbo")
@@ -49,7 +48,6 @@ async def ingest_endpoint(request: Request, credentials: str = Depends(utils.ver
         for chunk in splitter.split_text(line["content"]):
             source_chunks.append(Document(page_content=chunk, metadata={"source": line["source"]}))
     if config.is_external_db_used():
-        config.db_client.delete_collection(collection_name=config.default_collection_name)
         Qdrant.from_documents(
             documents=source_chunks,
             embedding=embedding,
@@ -71,10 +69,7 @@ def ask_endpoint(question: str, credentials: str = Depends(utils.verify_access_t
         raise HTTPException(status_code=404, detail="No data found. Ingest data using "
                                                     "https://github.com/enhancedocs/cli or the API directly")
     store = utils.get_vector_store(config)
-    prompt = PromptTemplate(
-        template=config.prompt_template, input_variables=["summaries", "question", "project_name"]
-    )
-    qa_chain = load_qa_with_sources_chain(llm, chain_type="stuff", prompt=prompt)
+    qa_chain = load_qa_with_sources_chain(llm, chain_type="stuff", prompt=config.prompt)
     chain = RetrievalQAWithSourcesChain(
         combine_documents_chain=qa_chain,
         retriever=store.as_retriever(),

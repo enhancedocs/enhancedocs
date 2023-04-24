@@ -1,5 +1,3 @@
-import asyncio
-
 import main
 import utils
 
