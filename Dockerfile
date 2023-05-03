@@ -12,4 +12,4 @@ COPY . /usr/src/app
 
 EXPOSE 8080
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "src.enhancedocs.main:app", "--host", "0.0.0.0", "--port", "8080"]

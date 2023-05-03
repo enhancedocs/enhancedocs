@@ -3,7 +3,7 @@ import faiss
 import pickle
 
 from dotenv import load_dotenv
-from typing import Optional, List
+from typing import List
 from fastapi import Depends, FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from langchain.chat_models import ChatOpenAI
@@ -17,10 +17,10 @@ from langchain.chains.chat_vector_db.prompts import (CONDENSE_QUESTION_PROMPT)
 from langchain.chains.llm import LLMChain
 from langchain.chains import ConversationalRetrievalChain
 from pydantic import BaseModel
-
-import utils
-from config import Config
 from langchain.vectorstores import Qdrant
+
+from . import utils
+from .config import Config
 load_dotenv()
 config = Config()
 

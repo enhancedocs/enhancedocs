@@ -1,6 +1,3 @@
-import main
-import utils
-
 from slack_sdk import WebClient
 from slack_bolt import App
 from slack_bolt.adapter.fastapi import SlackRequestHandler
@@ -10,6 +7,8 @@ from langchain.chains import RetrievalQAWithSourcesChain
 from langchain.chains.chat_vector_db.prompts import (CONDENSE_QUESTION_PROMPT)
 from langchain.chains.llm import LLMChain
 from langchain.chains import ConversationalRetrievalChain
+
+from .. import main, utils
 
 
 class SlackClient:

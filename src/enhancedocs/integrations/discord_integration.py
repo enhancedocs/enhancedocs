@@ -1,12 +1,12 @@
 import os
 import discord
-import main
-import utils
 from langchain.chains.qa_with_sources import load_qa_with_sources_chain
 from langchain.chains import RetrievalQAWithSourcesChain
 from langchain.chains.chat_vector_db.prompts import (CONDENSE_QUESTION_PROMPT)
 from langchain.chains.llm import LLMChain
 from langchain.chains import ConversationalRetrievalChain
+
+from .. import main, utils
 
 
 class DiscordClient(discord.Client):

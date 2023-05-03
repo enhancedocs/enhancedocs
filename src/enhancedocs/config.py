@@ -4,7 +4,7 @@ import json
 import asyncio
 import qdrant_client
 from langchain import PromptTemplate
-from integrations import discord_integration, slack_integration
+from .integrations import discord_integration, slack_integration
 
 
 class Config:

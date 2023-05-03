@@ -6,7 +6,7 @@ import qdrant_client
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from langchain.vectorstores import Qdrant
-import main
+from . import main
 
 security = HTTPBearer()
 
